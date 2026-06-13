@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Körpergefühl-Karte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Körpergefühl-Karte</h1>
+      <p class="subtitle">Wähle Körperteile aus und beschrifte sie mit Gefühlen</p>
+    </header>
+
+    <div id="main-container">
+      <div id="body-area">
+        <svg id="body-svg" viewBox="0 0 220 540" xmlns="http://www.w3.org/2000/svg">
+          <!-- Head -->
+          <circle data-part="head" data-label="Kopf" class="body-part" cx="110" cy="44" r="33"/>
+
+          <!-- Neck -->
+          <polygon data-part="neck" data-label="Hals" class="body-part"
+            points="100,77 120,77 122,97 98,97"/>
+
+          <!-- Left Shoulder (viewer's left) -->
+          <polygon data-part="shoulder-left" data-label="Linke Schulter" class="body-part"
+            points="54,101 98,97 95,122 48,124"/>
+
+          <!-- Right Shoulder (viewer's right) -->
+          <polygon data-part="shoulder-right" data-label="Rechte Schulter" class="body-part"
+            points="122,97 166,101 172,124 125,122"/>
+
+          <!-- Chest -->
+          <polygon data-part="chest" data-label="Brust" class="body-part"
+            points="95,122 125,122 128,192 92,192"/>
+
+          <!-- Abdomen -->
+          <polygon data-part="abdomen" data-label="Bauch" class="body-part"
+            points="92,192 128,192 126,254 94,254"/>
+
+          <!-- Pelvis -->
+          <polygon data-part="pelvis" data-label="Becken / Hüfte" class="body-part"
+            points="94,254 126,254 130,298 90,298"/>
+
+          <!-- Left Upper Arm -->
+          <polygon data-part="arm-upper-left" data-label="Linker Oberarm" class="body-part"
+            points="44,127 66,124 60,208 38,210"/>
+
+          <!-- Right Upper Arm -->
+          <polygon data-part="arm-upper-right" data-label="Rechter Oberarm" class="body-part"
+            points="154,124 176,127 182,210 160,208"/>
+
+          <!-- Left Lower Arm -->
+          <polygon data-part="arm-lower-left" data-label="Linker Unterarm" class="body-part"
+            points="34,214 57,212 52,290 30,287"/>
+
+          <!-- Right Lower Arm -->
+          <polygon data-part="arm-lower-right" data-label="Rechter Unterarm" class="body-part"
+            points="163,212 186,214 190,287 168,290"/>
+
+          <!-- Left Hand -->
+          <polygon data-part="hand-left" data-label="Linke Hand" class="body-part"
+            points="24,290 50,289 47,324 21,321"/>
+
+          <!-- Right Hand -->
+          <polygon data-part="hand-right" data-label="Rechte Hand" class="body-part"
+            points="170,289 196,290 199,321 173,324"/>
+
+          <!-- Left Thigh -->
+          <polygon data-part="thigh-left" data-label="Linker Oberschenkel" class="body-part"
+            points="90,298 109,298 106,386 87,386"/>
+
+          <!-- Right Thigh -->
+          <polygon data-part="thigh-right" data-label="Rechter Oberschenkel" class="body-part"
+            points="111,298 130,298 133,386 114,386"/>
+
+          <!-- Left Knee -->
+          <polygon data-part="knee-left" data-label="Linkes Knie" class="body-part"
+            points="87,386 106,386 104,416 85,416"/>
+
+          <!-- Right Knee -->
+          <polygon data-part="knee-right" data-label="Rechtes Knie" class="body-part"
+            points="114,386 133,386 135,416 116,416"/>
+
+          <!-- Left Lower Leg -->
+          <polygon data-part="leg-lower-left" data-label="Linker Unterschenkel" class="body-part"
+            points="85,416 104,416 102,492 83,492"/>
+
+          <!-- Right Lower Leg -->
+          <polygon data-part="leg-lower-right" data-label="Rechter Unterschenkel" class="body-part"
+            points="116,416 135,416 137,492 118,492"/>
+
+          <!-- Left Foot -->
+          <polygon data-part="foot-left" data-label="Linker Fuß" class="body-part"
+            points="68,492 102,492 104,516 62,514"/>
+
+          <!-- Right Foot -->
+          <polygon data-part="foot-right" data-label="Rechter Fuß" class="body-part"
+            points="118,492 152,492 158,514 120,516"/>
+        </svg>
+
+        <div id="body-controls">
+          <button id="add-emotion-btn" disabled>Gefühl hinzufügen</button>
+          <button id="clear-selection-btn" class="btn-secondary hidden">Auswahl aufheben</button>
+        </div>
+
+        <div id="tooltip" class="hidden"></div>
+      </div>
+
+      <div id="emotions-panel">
+        <div id="emotions-panel-header">
+          <h2>Gefühle</h2>
+          <span id="emotions-count">0</span>
+        </div>
+        <div id="emotions-list">
+          <p class="empty-state">Noch keine Gefühle eingetragen.<br>Wähle Körperteile aus und füge Gefühle hinzu.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Emotion Modal -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Gefühl hinzufügen</h3>
+        <button class="btn-close" id="modal-close">✕</button>
+      </div>
+
+      <div id="selected-parts-display">
+        <label>Ausgewählte Körperteile</label>
+        <div id="selected-parts-tags"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="emotion-input">Gefühl / Emotion</label>
+        <input type="text" id="emotion-input" list="emotion-suggestions"
+               placeholder="z.B. Angst, Freude, Trauer …" autocomplete="off">
+        <datalist id="emotion-suggestions">
+          <option value="Angst">
+          <option value="Freude">
+          <option value="Trauer">
+          <option value="Wut">
+          <option value="Ekel">
+          <option value="Überraschung">
+          <option value="Scham">
+          <option value="Schuld">
+          <option value="Liebe">
+          <option value="Mitgefühl">
+          <option value="Entspannung">
+          <option value="Stress">
+          <option value="Erschöpfung">
+          <option value="Aufregung">
+          <option value="Sehnsucht">
+          <option value="Einsamkeit">
+          <option value="Dankbarkeit">
+          <option value="Stolz">
+          <option value="Neid">
+          <option value="Begeisterung">
+          <option value="Hilflosigkeit">
+          <option value="Hoffnung">
+          <option value="Erleichterung">
+          <option value="Neugier">
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label>Körperliche Auswirkungen</label>
+        <div id="bullets-container"></div>
+        <button id="add-bullet-btn" type="button">+ Stichpunkt hinzufügen</button>
+      </div>
+
+      <div class="form-group">
+        <label>Farbe</label>
+        <div id="color-picker"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancel-btn" type="button" class="btn-secondary">Abbrechen</button>
+        <button id="save-btn" type="button">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Body-Part Emotions Modal -->
+  <div id="view-modal-overlay" class="hidden">
+    <div id="view-modal">
+      <div class="modal-header">
+        <h3 id="view-modal-title">Körperteil</h3>
+        <button class="btn-close" id="view-modal-close">✕</button>
+      </div>
+      <div id="view-modal-content"></div>
+      <div class="modal-actions">
+        <button id="view-add-btn" type="button">Weiteres Gefühl hinzufügen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
